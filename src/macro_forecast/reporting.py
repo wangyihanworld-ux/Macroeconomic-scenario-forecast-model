@@ -14,7 +14,8 @@ HEADERS = {"scenario":"情景", "month":"月份", "gdp_growth":"GDP增长率", "
            "revenue_mn":"实际收入（百万元）", "forecast_revenue_mn":"预测收入（百万元）",
            "variance_vs_base_mn":"较基准差异（百万元）", "actual_revenue_mn":"实际收入（百万元）",
            "predicted_revenue_mn":"滚动预测收入（百万元）", "error_mn":"误差（百万元）",
-           "absolute_percentage_error":"绝对百分比误差", "driver":"驱动项", "coefficient":"系数"}
+           "absolute_percentage_error":"绝对百分比误差", "seasonal_naive_revenue_mn":"季节朴素预测（百万元）",
+           "driver":"驱动项", "coefficient":"系数"}
 
 
 def _write_table(ws, frame: pd.DataFrame, start_row=1):
@@ -49,17 +50,21 @@ def generate_report(history: pd.DataFrame, scenarios: pd.DataFrame, output_path)
     summary["A1"] = "宏观经济情景与经营预测管理摘要"
     summary["A1"].font = Font(size=20, bold=True, color="1F4E78")
     metrics = [("历史期数", len(history)), ("模型 R²", result["model"].r_squared),
-               ("调整后 R²", result["model"].adjusted_r_squared), ("滚动回测 MAPE", result["mape"])]
+               ("调整后 R²", result["model"].adjusted_r_squared),
+               ("模型回测 MAPE", result["metrics"]["mape"]),
+               ("模型回测 MAE", result["metrics"]["mae"]),
+               ("模型回测 RMSE", result["metrics"]["rmse"]),
+               ("季节朴素基准 RMSE", result["benchmark_metrics"]["rmse"])]
     for r, (label, value) in enumerate(metrics, 3):
         summary.cell(r, 1, label).font = Font(bold=True); summary.cell(r, 2, value)
     base = result["scenario_totals"].set_index("scenario")["forecast_revenue_mn"]
-    summary["A8"] = "2026 情景收入预测（百万元）"; summary["A8"].font = Font(bold=True, color="1F4E78")
-    for r, name in enumerate(["压力", "基准", "乐观"], 9):
+    summary["A11"] = "2026 情景收入预测（百万元）"; summary["A11"].font = Font(bold=True, color="1F4E78")
+    for r, name in enumerate(["压力", "基准", "乐观"], 12):
         summary.cell(r, 1, name); summary.cell(r, 2, float(base[name]))
-    summary["A13"] = "管理解读"
-    summary["A13"].font = Font(bold=True, color="1F4E78")
-    summary["A14"] = "宏观情景用于量化经营收入的条件变化，不代表因果结论或承诺。"
-    summary["A15"] = "滚动回测检验样本外预测误差；决策时应同时关注误差与假设边界。"
+    summary["A16"] = "管理解读"
+    summary["A16"].font = Font(bold=True, color="1F4E78")
+    summary["A17"] = "宏观情景用于量化经营收入的条件变化，不代表因果结论或承诺。"
+    summary["A18"] = "模型应优于透明基准；VIF 较高时，单个驱动系数不宜单独解读。"
     summary.column_dimensions["A"].width = 62; summary.column_dimensions["B"].width = 20
 
     s = wb.create_sheet("情景比较"); _write_table(s, result["scenario_totals"])
@@ -68,7 +73,10 @@ def generate_report(history: pd.DataFrame, scenarios: pd.DataFrame, output_path)
     chart.series[0].tx = SeriesLabel(strRef=StrRef(f="'{s.title}'!$B$1"))
     chart.set_categories(Reference(s, min_col=1, min_row=2, max_row=4)); s.add_chart(chart, "E2")
     monthly = wb.create_sheet("月度预测"); _write_table(monthly, result["forecast"])
-    back = wb.create_sheet("回测评估"); _write_table(back, result["backtest"])
+    comparison = result["backtest"].merge(
+        result["benchmark_backtest"][["month", "predicted_revenue_mn"]].rename(
+            columns={"predicted_revenue_mn": "seasonal_naive_revenue_mn"}), on="month")
+    back = wb.create_sheet("回测评估"); _write_table(back, comparison)
     line = LineChart(); line.title = "实际与滚动预测"; line.y_axis.title = "百万元"
     line.add_data(Reference(back, min_col=2, max_col=3, min_row=1, max_row=back.max_row), titles_from_data=True)
     line.series[0].tx = SeriesLabel(strRef=StrRef(f="'{back.title}'!$B$1")); line.series[1].tx = SeriesLabel(strRef=StrRef(f="'{back.title}'!$C$1"))
@@ -76,6 +84,10 @@ def generate_report(history: pd.DataFrame, scenarios: pd.DataFrame, output_path)
     coeff = wb.create_sheet("模型解释"); _write_table(coeff, result["model"].coefficients)
     coeff["D1"] = "解释边界"; coeff["D1"].font = Font(bold=True, color="1F4E78")
     coeff["D2"] = "系数描述控制其他变量后的统计关联，不等同于因果效应。"
+    coeff["D4"] = "经济驱动 VIF"; coeff["D4"].font = Font(bold=True, color="1F4E78")
+    for row, values in enumerate(result["vif"].itertuples(index=False, name=None), 6):
+        coeff.cell(row, 4, values[0]); coeff.cell(row, 5, values[1])
+    coeff["D5"] = "驱动项"; coeff["E5"] = "VIF"
     hist = wb.create_sheet("历史数据"); _write_table(hist, history)
     assump = wb.create_sheet("情景假设"); _write_table(assump, scenarios)
     quality = wb.create_sheet("数据质量")
