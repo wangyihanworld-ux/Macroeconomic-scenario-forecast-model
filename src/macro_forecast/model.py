@@ -59,6 +59,46 @@ def rolling_backtest(history: pd.DataFrame, initial_months: int = 36) -> pd.Data
     return pd.DataFrame(rows)
 
 
+def benchmark_backtest(history: pd.DataFrame, initial_months: int = 36) -> pd.DataFrame:
+    """Evaluate a transparent seasonal-naive benchmark using the same holdout months."""
+    data = validate_history(history)
+    if initial_months < 12 or initial_months >= len(data):
+        raise DataValidationError("基准回测窗口不合理")
+    rows = []
+    for index in range(initial_months, len(data)):
+        actual = float(data.iloc[index]["revenue_mn"])
+        predicted = float(data.iloc[index - 12]["revenue_mn"])
+        error = actual - predicted
+        rows.append({"month": data.iloc[index]["month"], "actual_revenue_mn": actual,
+                     "predicted_revenue_mn": predicted, "error_mn": error,
+                     "absolute_percentage_error": abs(error) / actual})
+    return pd.DataFrame(rows)
+
+
+def error_metrics(backtest: pd.DataFrame) -> dict[str, float]:
+    errors = backtest["error_mn"].to_numpy(float)
+    return {"mae": float(np.mean(np.abs(errors))),
+            "rmse": float(np.sqrt(np.mean(errors ** 2))),
+            "mape": float(backtest["absolute_percentage_error"].mean())}
+
+
+def variance_inflation_factors(history: pd.DataFrame) -> pd.DataFrame:
+    """Report VIF for economic drivers so multicollinearity is visible to reviewers."""
+    data = validate_history(history)
+    values = data[FEATURES].to_numpy(float)
+    rows = []
+    for index, feature in enumerate(FEATURES):
+        y = values[:, index]
+        other = np.delete(values, index, axis=1)
+        x = np.column_stack([np.ones(len(other)), other])
+        prediction = x @ np.linalg.lstsq(x, y, rcond=None)[0]
+        sst = float(((y - y.mean()) ** 2).sum())
+        r_squared = 1 - float(((y - prediction) ** 2).sum()) / sst if sst else 1.0
+        vif = float("inf") if r_squared >= 1 - 1e-12 else 1 / (1 - r_squared)
+        rows.append({"driver": NAMES[index + 1], "vif": vif})
+    return pd.DataFrame(rows)
+
+
 def forecast_scenarios(history: pd.DataFrame, scenarios: pd.DataFrame) -> pd.DataFrame:
     model = fit_model(history)
     future = validate_scenarios(scenarios)
@@ -80,5 +120,10 @@ def summarize(history: pd.DataFrame, scenarios: pd.DataFrame) -> dict:
     totals = totals.sort_values("scenario").reset_index(drop=True)
     base = float(totals.loc[totals["scenario"] == "基准", "forecast_revenue_mn"].iloc[0])
     totals["variance_vs_base_mn"] = totals["forecast_revenue_mn"] - base
-    return {"model": model, "backtest": backtest, "forecast": forecast, "scenario_totals": totals,
-            "mape": float(backtest["absolute_percentage_error"].mean())}
+    benchmark = benchmark_backtest(history)
+    metrics = error_metrics(backtest)
+    benchmark_metrics = error_metrics(benchmark)
+    return {"model": model, "backtest": backtest, "benchmark_backtest": benchmark,
+            "forecast": forecast, "scenario_totals": totals, "mape": metrics["mape"],
+            "metrics": metrics, "benchmark_metrics": benchmark_metrics,
+            "vif": variance_inflation_factors(history)}

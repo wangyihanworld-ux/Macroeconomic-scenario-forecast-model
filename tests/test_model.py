@@ -4,7 +4,8 @@ import pandas as pd
 from openpyxl import load_workbook
 from macro_forecast.synthetic import build_synthetic_dataset
 from macro_forecast.validation import DataValidationError
-from macro_forecast.model import fit_model, rolling_backtest, forecast_scenarios, summarize
+from macro_forecast.model import (fit_model, rolling_backtest, forecast_scenarios, summarize,
+                                  benchmark_backtest, error_metrics, variance_inflation_factors)
 from macro_forecast.reporting import generate_demo_artifacts, REPORT_SHEETS
 
 
@@ -18,6 +19,14 @@ class MacroForecastTest(unittest.TestCase):
         f=fit_model(self.data.history).fitted; self.assertLess((f.revenue_mn-f.fitted_revenue_mn-f.residual_mn).abs().max(),1e-8)
     def test_backtest_has_24_months(self): self.assertEqual(len(rolling_backtest(self.data.history)),24)
     def test_mape_is_reasonable(self): self.assertLess(summarize(self.data.history,self.data.scenarios)["mape"],0.08)
+    def test_error_metrics_include_mae_rmse_and_mape(self):
+        metrics=error_metrics(rolling_backtest(self.data.history)); self.assertEqual(set(metrics),{"mae","rmse","mape"}); self.assertGreater(metrics["rmse"],0)
+    def test_benchmark_uses_same_holdout_period(self):
+        self.assertEqual(len(benchmark_backtest(self.data.history)),len(rolling_backtest(self.data.history)))
+    def test_model_beats_seasonal_naive_benchmark(self):
+        result=summarize(self.data.history,self.data.scenarios); self.assertLess(result["metrics"]["rmse"],result["benchmark_metrics"]["rmse"])
+    def test_vif_covers_all_economic_drivers(self):
+        vif=variance_inflation_factors(self.data.history); self.assertEqual(len(vif),5); self.assertTrue((vif["vif"]>=1).all())
     def test_scenarios_have_36_rows(self): self.assertEqual(len(forecast_scenarios(self.data.history,self.data.scenarios)),36)
     def test_scenario_direction(self):
         t=summarize(self.data.history,self.data.scenarios)["scenario_totals"].set_index("scenario"); self.assertGreater(t.loc["乐观","forecast_revenue_mn"],t.loc["基准","forecast_revenue_mn"]); self.assertLess(t.loc["压力","forecast_revenue_mn"],t.loc["基准","forecast_revenue_mn"])
