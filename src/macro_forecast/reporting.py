@@ -8,7 +8,7 @@ from openpyxl.chart.series import SeriesLabel
 from openpyxl.chart.data_source import StrRef
 from .model import summarize
 
-REPORT_SHEETS = ["管理摘要", "情景比较", "月度预测", "回测评估", "模型解释", "历史数据", "情景假设", "数据质量"]
+REPORT_SHEETS = ["管理摘要", "情景比较", "月度预测", "回测评估", "滞后回测", "模型解释", "历史数据", "情景假设", "数据质量"]
 HEADERS = {"scenario":"情景", "month":"月份", "gdp_growth":"GDP增长率", "inflation":"通胀率",
            "unemployment":"失业率", "consumer_confidence":"消费者信心", "fx_index":"汇率指数",
            "revenue_mn":"实际收入（百万元）", "forecast_revenue_mn":"预测收入（百万元）",
@@ -51,9 +51,9 @@ def generate_report(history: pd.DataFrame, scenarios: pd.DataFrame, output_path)
     summary["A1"].font = Font(size=20, bold=True, color="1F4E78")
     metrics = [("历史期数", len(history)), ("模型 R²", result["model"].r_squared),
                ("调整后 R²", result["model"].adjusted_r_squared),
-               ("模型回测 MAPE", result["metrics"]["mape"]),
-               ("模型回测 MAE", result["metrics"]["mae"]),
-               ("模型回测 RMSE", result["metrics"]["rmse"]),
+               ("条件回测 MAPE", result["metrics"]["mape"]),
+               ("条件回测 MAE", result["metrics"]["mae"]),
+               ("条件回测 RMSE", result["metrics"]["rmse"]),
                ("季节朴素基准 RMSE", result["benchmark_metrics"]["rmse"])]
     for r, (label, value) in enumerate(metrics, 3):
         summary.cell(r, 1, label).font = Font(bold=True); summary.cell(r, 2, value)
@@ -64,6 +64,10 @@ def generate_report(history: pd.DataFrame, scenarios: pd.DataFrame, output_path)
     summary["A16"] = "管理解读"
     summary["A16"].font = Font(bold=True, color="1F4E78")
     summary["A17"] = "宏观情景用于量化经营收入的条件变化，不代表因果结论或承诺。"
+    summary["A20"] = "滞后回测 RMSE"; summary["B20"] = result["lagged_metrics"]["rmse"]
+    summary["A21"] = "滞后回测 MAPE"; summary["B21"] = result["lagged_metrics"]["mape"]
+    summary["A22"] = "条件回测使用当期驱动；滞后回测使用配置发布滞后，均非历史实时数据版本。"
+    summary["A23"] = "默认滞后（月）：GDP 3，通胀/失业 2，信心/汇率 1；历史收入假设月末可得。"
     summary["A18"] = "模型应优于透明基准；VIF 较高时，单个驱动系数不宜单独解读。"
     summary.column_dimensions["A"].width = 62; summary.column_dimensions["B"].width = 20
 
@@ -81,6 +85,7 @@ def generate_report(history: pd.DataFrame, scenarios: pd.DataFrame, output_path)
     line.add_data(Reference(back, min_col=2, max_col=3, min_row=1, max_row=back.max_row), titles_from_data=True)
     line.series[0].tx = SeriesLabel(strRef=StrRef(f="'{back.title}'!$B$1")); line.series[1].tx = SeriesLabel(strRef=StrRef(f="'{back.title}'!$C$1"))
     line.set_categories(Reference(back, min_col=1, min_row=2, max_row=back.max_row)); back.add_chart(line, "G2")
+    lagged = wb.create_sheet("滞后回测"); _write_table(lagged, result["lagged_backtest"])
     coeff = wb.create_sheet("模型解释"); _write_table(coeff, result["model"].coefficients)
     coeff["D1"] = "解释边界"; coeff["D1"].font = Font(bold=True, color="1F4E78")
     coeff["D2"] = "系数描述控制其他变量后的统计关联，不等同于因果效应。"

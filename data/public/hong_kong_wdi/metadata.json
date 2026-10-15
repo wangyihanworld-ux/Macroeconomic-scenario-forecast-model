@@ -1,0 +1,32 @@
+{
+  "country": "HKG",
+  "period": "1991:2024",
+  "retrieved_at_utc": "2026-10-14T16:22:41.272074+00:00",
+  "vintage": "latest available at retrieval; historical revisions included",
+  "release_dates": "not supplied by this endpoint; lastupdated is dataset metadata, not observation publication time",
+  "attribution": "World Bank, World Development Indicators",
+  "terms_url": "https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets",
+  "sources": {
+    "gdp_growth_pct": {
+      "indicator": "NY.GDP.MKTP.KD.ZG",
+      "url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.KD.ZG?format=json&date=1991:2024&per_page=100",
+      "unit": "percent",
+      "lastupdated": "2026-10-08",
+      "sha256": "f0f1328cccfaca68a6ccb09fe4fe2fbd0306e7f4638319561f67b8a6bb3dcb8d"
+    },
+    "inflation_pct": {
+      "indicator": "FP.CPI.TOTL.ZG",
+      "url": "https://api.worldbank.org/v2/country/HKG/indicator/FP.CPI.TOTL.ZG?format=json&date=1991:2024&per_page=100",
+      "unit": "percent",
+      "lastupdated": "2026-10-08",
+      "sha256": "a7c5436011287e8d36b285cfd7adc676ec648dcd7e81953a3288da644d02a710"
+    },
+    "unemployment_pct": {
+      "indicator": "SL.UEM.TOTL.ZS",
+      "url": "https://api.worldbank.org/v2/country/HKG/indicator/SL.UEM.TOTL.ZS?format=json&date=1991:2024&per_page=100",
+      "unit": "percent",
+      "lastupdated": "2026-10-08",
+      "sha256": "271c0fc8b1250ff65914b8ff74bb29adee3b454ba079fc06dae6d23c61347091"
+    }
+  }
+}

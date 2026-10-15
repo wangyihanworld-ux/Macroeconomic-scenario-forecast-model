@@ -24,3 +24,7 @@
 
 压力、基准和乐观情景各含 12 个月假设。情景之间同时改变 GDP、通胀、失业、消费者信心和汇率，因此结果用于整体条件比较，不用于识别单一变量的因果效应。
 
+
+
+## 2026-10-15 evaluation clarification
+`rolling_backtest` is conditional on realized contemporaneous drivers. `lagged_backtest` is separate, using explicit configurable publication-lag assumptions and source-month fields; latest-vintage data are not real-time vintages. The independent annual public case uses percent units, not the synthetic monthly decimal rates. See [public case](public-data-case.md).

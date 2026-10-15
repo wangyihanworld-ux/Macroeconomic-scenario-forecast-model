@@ -1,12 +1,24 @@
 # 宏观经济情景与经营预测模型
 
+[English](README.en.md) · 中文
+
 [![tests](https://github.com/wangyihanworld-ux/Macroeconomic-scenario-forecast-model/actions/workflows/tests.yml/badge.svg)](https://github.com/wangyihanworld-ux/Macroeconomic-scenario-forecast-model/actions/workflows/tests.yml)
 
 这是面向经济分析、财务 BP 和 FP&A 求职场景的作品集项目四。项目使用完全合成的数据，把 GDP 增长率、通胀率、失业率、消费者信心和汇率指数连接到月度经营收入，建立可解释的多元回归、滚动样本外回测及压力/基准/乐观情景预测。
 
-> 项目中的经济体、企业、月份、指标和金额均为程序生成的虚构数据，不代表真实公司业绩或官方宏观统计。
+> 月度经营 Demo 使用合成数据。新增的独立香港年度案例使用世界银行 WDI 公开数据，预测 GDP 增长率，不虚构企业营收。
+
+## 2026-10-15 方法更新
+
+- 月份标准化、连续性、有限数值、恒定收入、矩阵秩与情景预测期间校验。
+- `rolling_backtest` 保留为条件回测：预测时已知当期宏观变量。
+- `lagged_backtest` 单独按发布滞后假设回测：GDP 3个月，通胀/失业2个月，信心/汇率1个月；历史收入假设月末可得。输出预测时点及每个指标的来源月份。
+- 两种误差分别展示，均不宣称使用历史实时数据版本。发布滞后是可配置假设，尚未逐次核对历史发布日期。
+- [香港公开数据案例](docs/public-data-case.md)：原始响应、来源、校验值和离线复现。
 
 ## 报告预览
+
+截图来自之前发布的合成 Demo；新生成的报告另含“滞后回测”工作表。
 
 下图由一键 Demo 的完全合成数据报告生成，不包含真实企业或官方统计数据。
 
@@ -28,8 +40,8 @@
 - 采用前 36 个月起步的扩展窗口，对后 24 个月进行样本外滚动回测；
 - 计算 MAE、RMSE 和 MAPE，并与季节朴素预测进行同窗口基准比较；
 - 输出五项经济驱动的 VIF，共线性风险不再被高 R² 掩盖；
-- 一键生成合成输入工作簿和含 8 张工作表的 Excel 管理报告；
-- 18 项自动化测试覆盖数据契约、模型勾稽、回测、基准比较、VIF、情景方向和报告可重开。
+- 一键生成合成输入工作簿和含 9 张工作表的 Excel 管理报告；
+- 29 项自动化测试覆盖数据契约、模型勾稽、回测、基准比较、VIF、情景方向和报告可重开。
 
 ## 一键运行
 
@@ -54,6 +66,16 @@ macro-forecast-demo --output-dir .\demo_output
 ```powershell
 python -m unittest discover -s tests -v
 ```
+
+## 公开数据案例
+
+在仓库根目录运行（默认离线）：
+
+```powershell
+python -m macro_forecast.public_case
+```
+
+仅在主动更新数据版本时增加 `--refresh`，并审查原始响应及结果变化。
 
 ## 方法边界
 
