@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-26",
+  "tests": 31,
+  "subtests": 0,
+  "exit_code": 0,
+  "command": "python -m pytest -q --tb=short -p no:cacheprovider",
+  "tested_code_commit": "dc85ac924546c074eccc17ce9381f65428ac186a",
+  "source_sha256": {
+    "tests\\test_benchmark_evidence.py": "57a4d85dcb16ffa2dd405e60b37df705eb8cdd1aa81f0800ab08143a609f1a81",
+    "tests\\test_boundaries.py": "a9d7f1fed360b066b791abb50743b3be513085fc9c7f179e7b1c554dd354edd3",
+    "tests\\test_model.py": "e37913402dfc80906622ecc6ddb931f4dbc6c3808ba4c653557d6aea146eaef8",
+    "tests\\test_public_case.py": "5e785304085d2352ef54ad3b5062b3892a8a2df74aaefb27173fb6d77cf052a7",
+    "src\\macro_forecast\\benchmark_evidence.py": "5164f0a92cfd6b9e1cc65f4be7adcb949d92d15bb4490660c54135757757adeb",
+    "src\\macro_forecast\\demo.py": "106cf9fbce61934cc96dd412004b08d09de27fa3a1293c0e3ccc5156b39a21b8",
+    "src\\macro_forecast\\model.py": "8971323a3663a7768c3c974b5493b0c8584fcc0c15d9d23ba97e0b4d38d90073",
+    "src\\macro_forecast\\public_case.py": "3f2aba96c38ea159a3b4e693ce59066834f7eab8a80eea7bcee151d5fe1ea312",
+    "src\\macro_forecast\\reporting.py": "2224895c6e8fa2a0bdc6619701c571e38d14451f5f8d49dec2d8744f2ef675ac",
+    "src\\macro_forecast\\robustness.py": "45a8a1086db882000a93961816e6ca364a5bd15e97188ede5c35030e99b034ef",
+    "src\\macro_forecast\\synthetic.py": "5e11cf9dbb3f1fe733252d2661779dc5e059da2a79c002859f660dc11a47f462",
+    "src\\macro_forecast\\validation.py": "415457aca75ab3ff717cff78fc5fff92650fcc9c0b418ffc9d3abe7bfe59961c",
+    "src\\macro_forecast\\__init__.py": "48299b3964e8be25144097462906e33fc93254d1cf81452ce5a840eaf2905ec0"
+  },
+  "validation": "AI-assisted local validation; not remote CI or user acceptance",
+  "environment": "Windows Python 3.14; project .testenv or .warehouse-env; worktree TEMP"
+}
