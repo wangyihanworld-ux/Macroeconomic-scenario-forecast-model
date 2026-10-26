@@ -41,7 +41,7 @@
 - 计算 MAE、RMSE 和 MAPE，并与季节朴素预测进行同窗口基准比较；
 - 输出五项经济驱动的 VIF，共线性风险不再被高 R² 掩盖；
 - 一键生成合成输入工作簿和含 9 张工作表的 Excel 管理报告；
-- 29 项自动化测试覆盖数据契约、模型勾稽、回测、基准比较、VIF、情景方向和报告可重开。
+- 31 项自动化测试覆盖数据契约、模型勾稽、回测、基准比较、VIF、情景方向和报告可重开。
 
 ## 一键运行
 
@@ -86,3 +86,14 @@ python -m macro_forecast.public_case
 
 详细定义见 [数据字典与建模口径](docs/data-dictionary.md)，实施过程见 [项目计划](docs/project-plan.md)。
 
+
+## Stronger baseline and interpretation
+
+`python -m macro_forecast.benchmark_evidence` compares a calendar-only trend/season baseline with seasonal naive, conditional macro and lag-assumed macro on identical target months. The conditional model uses target-month macro variables, so its information advantage must remain visible.
+
+Synthetic revenue is generated from a related linear family with low noise. High R² and low MAPE do not establish real-business predictive performance. The independent public WDI annual GDP case remains separate: percentage-point errors, small holdout sample, latest-vintage rather than real-time data. Preserve the modest improvement over a historical-mean baseline, without significance or causal claims.
+
+
+## 2026年10月26日复核
+
+本轮新增功能、规则来源和适用限制见 [复核记录](docs/review-20261026.md)。实现与自动测试有AI辅助，不能代表本人独立编写、用户试用或企业采用。历史测试数属于当时版本，本轮结果见交付证据。
