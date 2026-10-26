@@ -5,9 +5,9 @@
 | 字段 | 单位 | 含义 |
 |---|---:|---|
 | month | 月 | 月初日期，业务主键 |
-| gdp_growth | % | 合成年化 GDP 增长率 |
-| inflation | % | 合成年化通胀率 |
-| unemployment | % | 合成失业率 |
+| gdp_growth | 小数比例（0.032 = 3.2%） | 合成年化 GDP 增长率 |
+| inflation | 小数比例（0.032 = 3.2%） | 合成年化通胀率 |
+| unemployment | 小数比例（0.032 = 3.2%） | 合成失业率 |
 | consumer_confidence | 指数 | 合成消费者信心指数 |
 | fx_index | 指数 | 合成汇率指数 |
 | revenue_mn | 百万元 | 合成企业月度收入 |
