@@ -18,3 +18,15 @@ public_case_output/
 .pytest_cache/
 pytest-cache-files-*/
 !docs/benchmark-results/*.csv
+
+# Local/private material must not be committed
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+/private/
+/application-materials*/
+/review-*/
+/privacy-audit-*/
+/resume*/
