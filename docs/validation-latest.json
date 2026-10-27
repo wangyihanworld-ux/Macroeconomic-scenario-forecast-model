@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-27",
+  "tests": 31,
+  "subtests": 0,
+  "test_framework": "pytest",
+  "test_exit_code": 0,
+  "demo_exit_codes": {
+    "macro_forecast.demo": 0,
+    "macro_forecast.benchmark_evidence": 0,
+    "macro_forecast.public_case": 0,
+    "macro_forecast.robustness": 0
+  },
+  "source_sha256_lf_normalized": {
+    "src/macro_forecast/__init__.py": "747a1b49cb46424f699c7875a3c128ab375e441465e2fad21523cea775207c78",
+    "src/macro_forecast/benchmark_evidence.py": "5164f0a92cfd6b9e1cc65f4be7adcb949d92d15bb4490660c54135757757adeb",
+    "src/macro_forecast/demo.py": "058e108cec4ed4b86f83a74f0bb4c5ee4b80944cd5328e5ad5c1ff8fd818a36d",
+    "src/macro_forecast/model.py": "c7d3023346135de993f3647aac92fdd14e1f1adf05d9fd4cb20a7ca899a1b229",
+    "src/macro_forecast/public_case.py": "cce8cc2b5b259df9e9908161f18d5249b4df342737f03e4dd6f607e9a7501504",
+    "src/macro_forecast/reporting.py": "866d0112e3151abd35342b22706ae288b5b3b988516b25232f159a966443138c",
+    "src/macro_forecast/robustness.py": "45a8a1086db882000a93961816e6ca364a5bd15e97188ede5c35030e99b034ef",
+    "src/macro_forecast/synthetic.py": "4acbe836fcabc4efefee081bc7b2b8d855966dea34bdebbe1d01c96c23b39e44",
+    "src/macro_forecast/validation.py": "6938df6f77a45f0b5bbcddfb273690399bb000fff8c0e5cecc6db995812db33a",
+    "tests/test_benchmark_evidence.py": "57a4d85dcb16ffa2dd405e60b37df705eb8cdd1aa81f0800ab08143a609f1a81",
+    "tests/test_boundaries.py": "29073fa87a73fd607ec92e7cc54bcc61991527674e0e5ca333bfa467fa60ed5c",
+    "tests/test_model.py": "97dccd5d43144ba86e843efb482a897ca4385479e52e41034b94b91f503e5c61",
+    "tests/test_public_case.py": "f26710472b4bf2d601b569a0ba10d8fbe6b65dd2b36eb92b5ce5ff6466288f5e"
+  },
+  "limits": "AI-assisted local verification; not evidence of deployment, user acceptance or business outcomes."
+}

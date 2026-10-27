@@ -1,5 +1,7 @@
 # 宏观经济情景与经营预测模型
 
+[运行与最新验证](docs/validation-latest.md)
+
 [English](README.en.md) · 中文
 
 [![tests](https://github.com/wangyihanworld-ux/Macroeconomic-scenario-forecast-model/actions/workflows/tests.yml/badge.svg)](https://github.com/wangyihanworld-ux/Macroeconomic-scenario-forecast-model/actions/workflows/tests.yml)
